@@ -8,7 +8,8 @@ import {
 
 // OAuth flow steps
 export type OAuthStep =
-  | "metadata_discovery"
+  | "prm_discovery"
+  | "oauth_metadata_discovery"
   | "client_registration"
   | "authorization_redirect"
   | "authorization_code"
@@ -44,7 +45,7 @@ export interface AuthDebuggerState {
 export const EMPTY_DEBUGGER_STATE: AuthDebuggerState = {
   isInitiatingAuth: false,
   oauthTokens: null,
-  oauthStep: "metadata_discovery",
+  oauthStep: "prm_discovery",
   oauthMetadata: null,
   resourceMetadata: null,
   resourceMetadataError: null,

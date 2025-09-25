@@ -95,7 +95,7 @@ const AuthDebugger = ({
     }
 
     updateAuthState({
-      oauthStep: "metadata_discovery",
+      oauthStep: "prm_discovery",
       authorizationUrl: null,
       statusMessage: null,
       latestError: null,
@@ -145,7 +145,7 @@ const AuthDebugger = ({
       // Step through the OAuth flow using the state machine instead of the auth() function
       let currentState: AuthDebuggerState = {
         ...authState,
-        oauthStep: "metadata_discovery",
+        oauthStep: "prm_discovery",
         authorizationUrl: null,
         latestError: null,
       };

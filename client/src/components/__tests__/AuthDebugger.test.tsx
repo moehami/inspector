@@ -387,7 +387,7 @@ describe("AuthDebugger", () => {
         resourceMetadataError: null,
         resource: null,
         oauthTokens: null,
-        oauthStep: "metadata_discovery",
+        oauthStep: "prm_discovery",
         latestError: null,
         oauthClientInfo: null,
         oauthMetadata: null,
@@ -413,13 +413,15 @@ describe("AuthDebugger", () => {
           authState: {
             ...defaultAuthState,
             isInitiatingAuth: false, // Changed to false so button is enabled
-            oauthStep: "metadata_discovery",
+            oauthStep: "prm_discovery",
           },
         });
       });
 
       // Verify metadata discovery step
-      expect(screen.getByText("Metadata Discovery")).toBeInTheDocument();
+      expect(
+        screen.getByText("Protected Resource Metadata Discovery"),
+      ).toBeInTheDocument();
 
       // Click Continue - this should trigger metadata discovery
       await act(async () => {
@@ -709,7 +711,7 @@ describe("AuthDebugger", () => {
 
       // Verify that the flow started with metadata discovery
       expect(updateAuthState).toHaveBeenCalledWith({
-        oauthStep: "metadata_discovery",
+        oauthStep: "prm_discovery",
         authorizationUrl: null,
         statusMessage: null,
         latestError: null,

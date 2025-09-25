@@ -59,7 +59,8 @@ interface OAuthFlowProgressProps {
 }
 
 const steps: Array<OAuthStep> = [
-  "metadata_discovery",
+  "prm_discovery",
+  "oauth_metadata_discovery",
   "client_registration",
   "authorization_redirect",
   "authorization_code",
@@ -128,8 +129,8 @@ export const OAuthFlowProgress = ({
 
       <div className="space-y-3">
         <OAuthStepDetails
-          label="Metadata Discovery"
-          {...getStepProps("metadata_discovery")}
+          label="Protected Resource Metadata Discovery"
+          {...getStepProps("prm_discovery")}
         >
           {authState.oauthMetadata && (
             <details className="text-xs mt-2">
@@ -191,26 +192,35 @@ export const OAuthFlowProgress = ({
                   </p>
                 </div>
               )}
+            </details>
+          )}
+        </OAuthStepDetails>
 
-              {authState.oauthMetadata && (
-                <div className="mt-2">
-                  <p className="font-medium">Authorization Server Metadata:</p>
-                  {authState.authServerUrl && (
-                    <p className="text-xs text-muted-foreground">
-                      From{" "}
-                      {
-                        new URL(
-                          "/.well-known/oauth-authorization-server",
-                          authState.authServerUrl,
-                        ).href
-                      }
-                    </p>
-                  )}
-                  <pre className="mt-2 p-2 bg-muted rounded-md overflow-auto max-h-[300px]">
-                    {JSON.stringify(authState.oauthMetadata, null, 2)}
-                  </pre>
-                </div>
-              )}
+        <OAuthStepDetails
+          label="OAuth Authorization Server Metadata Discovery"
+          {...getStepProps("oauth_metadata_discovery")}
+        >
+          {authState.oauthMetadata && (
+            <details className="text-xs mt-2">
+              <summary className="cursor-pointer text-muted-foreground font-medium">
+                Authorization Server Metadata
+              </summary>
+              <div className="mt-2">
+                {authState.authServerUrl && (
+                  <p className="text-xs text-muted-foreground">
+                    From{" "}
+                    {
+                      new URL(
+                        "/.well-known/oauth-authorization-server",
+                        authState.authServerUrl,
+                      ).href
+                    }
+                  </p>
+                )}
+                <pre className="mt-2 p-2 bg-muted rounded-md overflow-auto max-h-[300px]">
+                  {JSON.stringify(authState.oauthMetadata, null, 2)}
+                </pre>
+              </div>
             </details>
           )}
         </OAuthStepDetails>

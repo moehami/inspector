@@ -28,20 +28,15 @@ export interface StateTransition {
 
 // State machine transitions
 export const oauthTransitions: Record<OAuthStep, StateTransition> = {
-  metadata_discovery: {
+  prm_discovery: {
     canTransition: async () => true,
     execute: async (context) => {
-      // Default to discovering from the server's URL
-      let authServerUrl = new URL("/", context.serverUrl);
       let resourceMetadata: OAuthProtectedResourceMetadata | null = null;
       let resourceMetadataError: Error | null = null;
       try {
         resourceMetadata = await discoverOAuthProtectedResourceMetadata(
           context.serverUrl,
         );
-        if (resourceMetadata?.authorization_servers?.length) {
-          authServerUrl = new URL(resourceMetadata.authorization_servers[0]);
-        }
       } catch (e) {
         if (e instanceof Error) {
           resourceMetadataError = e;
@@ -53,10 +48,28 @@ export const oauthTransitions: Record<OAuthStep, StateTransition> = {
       const resource: URL | undefined = await selectResourceURL(
         context.serverUrl,
         context.provider,
-        // we default to null, so swap it for undefined if not set
         resourceMetadata ?? undefined,
       );
 
+      let authServerUrl = new URL("/", context.serverUrl);
+      if (resourceMetadata?.authorization_servers?.length) {
+        authServerUrl = new URL(resourceMetadata.authorization_servers[0]);
+      }
+
+      context.updateState({
+        resourceMetadata,
+        resource,
+        resourceMetadataError,
+        authServerUrl,
+        oauthStep: "oauth_metadata_discovery",
+      });
+    },
+  },
+
+  oauth_metadata_discovery: {
+    canTransition: async (context) => !!context.state.authServerUrl,
+    execute: async (context) => {
+      const authServerUrl = context.state.authServerUrl!;
       const metadata = await discoverAuthorizationServerMetadata(authServerUrl);
       if (!metadata) {
         throw new Error("Failed to discover OAuth metadata");
@@ -64,10 +77,6 @@ export const oauthTransitions: Record<OAuthStep, StateTransition> = {
       const parsedMetadata = await OAuthMetadataSchema.parseAsync(metadata);
       context.provider.saveServerMetadata(parsedMetadata);
       context.updateState({
-        resourceMetadata,
-        resource,
-        resourceMetadataError,
-        authServerUrl,
         oauthMetadata: parsedMetadata,
         oauthStep: "client_registration",
       });

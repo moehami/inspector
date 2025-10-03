@@ -28,7 +28,7 @@ on:
         default: false
 
 env:
-  NODE_VERSION: '18'
+  NODE_VERSION: '22'
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
@@ -93,8 +93,8 @@ jobs:
 
       - name: 📦 Install dependencies
         run: |
-          npm ci --prefer-offline --no-audit
-          npm install lucide-react --save
+          npm ci --prefer-offline --no-audit --legacy-peer-deps
+          npm install lucide-react --save --legacy-peer-deps
         env:
           NODE_ENV: development
 
